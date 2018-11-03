@@ -1,7 +1,7 @@
 from constants import FILE_PATH, FILE_EXTENSION, DIRECTORY_EXTENSION
 import os
 
-class Core():
+class Core:
     def __init__(self, input_file, core_num, cache):
         self.instructions = self.read_instructions(input_file, core_num)
         self.core_num = core_num
@@ -19,7 +19,7 @@ class Core():
         instructions = []
         with open(path) as f:
             instructions = [tuple([int(i, 0) for i in line.split()]) for line in f]
-        #print(instructions)
+        print(instructions)
         return instructions
 
     def execute_instruction(self):
