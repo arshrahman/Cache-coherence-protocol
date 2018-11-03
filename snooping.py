@@ -8,6 +8,7 @@ class Snooping:
         self.data_traffic = 0
         self.bus_updates = 0
         self.invalidations = 0
+        self.stall_cycle = 0
         self.caches.snooping = self
 
     def add_shared_cache(self, core_num, block_index):
@@ -28,6 +29,16 @@ class Snooping:
     def is_cache_exclusive(self, block_index):
         return self.exclusive_cache.get(block_index, False)
 
+    #Snooping gets busy when transfering a cache block from one processor to another
+    def is_busy(self):
+        if self.stall_cycle <= 1:
+            self.stall_cycle = 0
+            return False
+        else:
+            self.stall_cycle -= 1
+            return True
 
+    def set_cycle_busy(self, cycles):
+        self.stall_cycle += cycles
 
 

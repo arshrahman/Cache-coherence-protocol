@@ -22,16 +22,18 @@ class Core:
         print(instructions)
         return instructions
 
-    def execute_instruction(self):
-        if self.current_instruction >= self.total_instructions:
-            return None
-        else:
-            self.current_instruction += 1
-            return self.instructions[self.current_instruction]
+    def has_instruction(self):
+        return (self.current_instruction < self.total_instructions)
+    
+    def execute_instruction(self):        
+        instr_type, data = self.instructions[self.current_instruction]
+        self.current_instruction += 1
+        return instr_type, data
 
     def stall_instruction(self):
         self.current_instruction -= 1
 
+    #Core gets busy to compute instructions other than load & store
     def is_busy(self):
         if self.stall_cycle <= 1:
             self.stall_cycle = 0

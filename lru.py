@@ -5,7 +5,7 @@ class LRU:
         self.blocks = []
 
     def reorder_to_recent(self, index):
-        self.blocks.insert(index, self.blocks.pop(index))
+        self.blocks.insert(0, self.blocks.pop(index))
 
     def cache_replacement(self, tag):
         removed_tag = -1
