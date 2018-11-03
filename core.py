@@ -12,6 +12,7 @@ class Core:
         self.stall_cycle = 0
 
     def read_instructions(self, input_file, core_num):
+        print('reading core ', core_num)
         directory = ''.join([input_file, DIRECTORY_EXTENSION])
         filename = ''.join([input_file, '_', str(core_num), FILE_EXTENSION])
         path = os.path.join(FILE_PATH, directory, filename)
@@ -19,7 +20,6 @@ class Core:
         instructions = []
         with open(path) as f:
             instructions = [tuple([int(i, 0) for i in line.split()]) for line in f]
-        print(instructions)
         return instructions
 
     def has_instruction(self):

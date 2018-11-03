@@ -9,7 +9,11 @@ class Snooping:
         self.bus_updates = 0
         self.invalidations = 0
         self.stall_cycle = 0
-        self.caches.snooping = self
+        self.add_caches()
+
+    def add_caches(self):
+        for cache in self.caches:
+            cache.set_common_snooping(self)
 
     def add_shared_cache(self, core_num, block_index):
         self.shared_cache[block_index].add(core_num)
@@ -40,5 +44,15 @@ class Snooping:
 
     def set_cycle_busy(self, cycles):
         self.stall_cycle += cycles
+
+    def snoop_caches(self, core_num, instr_type, snoop_action, block_index, set_index, tag):
+        if snoop_action is None:
+            return
+        
+        self.data_traffic += 1
+        for cache in self.caches:
+            if cache.core_num == core_num:
+                continue
+            cache.snooping_next_state_transtion(instr_type, snoop_action, block_index, set_index, tag)
 
 
