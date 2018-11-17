@@ -33,26 +33,28 @@ INVALID = 'invalid'
 MESI_STATE_MACHINE = {
     INVALID: {
         READ: (EXCLUSIVE, MEM_READ, 100),
-        COPY: (SHARED, MEM_READ, 0),
-        WRITE: (MODIFIED, RWITM, 100)
+        COPY: (SHARED, MEM_READ, 100),
+        WRITE: (MODIFIED, RWITM, 100),
+        MEM_READ: (INVALID, None, 0),
+        RWITM: (INVALID, None, 0)
     },
     SHARED: {
         READ: (SHARED, None, 0),
-        WRITE: (MODIFIED, INVALIDATE, 0),
-        LOAD: (SHARED, MEM_READ, 0),
-        STORE: (INVALID, INVALIDATE, 0)
+        WRITE: (MODIFIED, RWITM, 0),
+        MEM_READ: (SHARED, None, 0),
+        RWITM: (INVALID, None, 0)
     },
     MODIFIED: {
         READ: (MODIFIED, None, 0),
         WRITE: (MODIFIED, None, 0),
-        LOAD: (SHARED, MEM_READ, 100),
-        STORE: (INVALID, INVALIDATE, 100)
+        MEM_READ: (SHARED, None, 100),
+        RWITM: (INVALID, None, 100)
     },
     EXCLUSIVE: {
         READ: (EXCLUSIVE, None, 0),
         WRITE: (MODIFIED, None, 0),
-        LOAD: (SHARED, MEM_READ, 0),
-        STORE: (INVALID, RWITM, 0)
+        MEM_READ: (SHARED, None, 0),
+        RWITM: (INVALID, None, 0)
     }
 }
 

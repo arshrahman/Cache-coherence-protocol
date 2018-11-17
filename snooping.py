@@ -1,4 +1,5 @@
 from collections import defaultdict
+from constants import INVALID, SHARED, MODIFIED, EXCLUSIVE
 
 class Snooping:
     def __init__(self, caches):
@@ -50,9 +51,20 @@ class Snooping:
             return
         
         self.data_traffic += 1
+        is_private_access = is_public_access = False
         for cache in self.caches:
             if cache.core_num == core_num:
                 continue
-            cache.snooping_next_state_transtion(instr_type, snoop_action, block_index, set_index, tag)
+            cache_state = cache.snooping_next_state_transtion(instr_type, snoop_action, block_index, set_index, tag)
+
+            if cache_state == MODIFIED or cache_state == EXCLUSIVE:
+                is_private_access = True
+            elif cache_state == SHARED:
+                is_public_access = True
+        
+        if is_private_access:
+            self.caches[core_num].private_data_access += 1
+        if is_public_access:
+            self.caches[core_num].public_data_access += 1
 
 

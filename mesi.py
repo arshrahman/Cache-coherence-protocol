@@ -11,15 +11,17 @@ class Mesi(Cache):
         current_state = self.cache_states[set_index].setdefault(tag, INVALID)
         new_state, snoop_action, stall_cycles = self.next_state_transition(current_state, instr_type, block_index)
 
-        if self.is_cache_miss and self.stall_cycle == 0:
+        if self.has_scheduled_update:
             self.update_cache(new_state, block_index, set_index, tag)
-        elif self.is_cache_miss:
-            self.schedule_update(stall_cycles, block_index, set_index, tag)
         else:
-            self.cache_hit(new_state, set_index, tag)
+            self.schedule_update(current_state, new_state, stall_cycles, block_index, set_index, tag)
+        
+        #if stall_cycles == 0:
+            #self.cache_hit(new_state, set_index, tag)
 
+        #print('core', self.core_num, 'instr_type', instr_type, 'snoop_action', snoop_action, 'next_state', new_state, 'set_index', set_index, 'tag', tag)
         self.snooping.snoop_caches(self.core_num, instr_type, snoop_action, block_index, set_index, tag)    
-        return self.stall_cycle
+        return self.has_scheduled_update
     
     def next_state_transition(self, current_state, instr_type, block_index):
         if instr_type == LOAD and current_state == INVALID and self.snooping.is_cache_shared(block_index):
@@ -33,6 +35,7 @@ class Mesi(Cache):
         return (state == INVALID)
 
     def update_cache(self, new_state, block_index, set_index, tag):
+        self.has_scheduled_update = False
         self.cache_states[set_index][tag] = new_state
         self.snooping.add_shared_cache(self.core_num, block_index) 
 
@@ -44,15 +47,22 @@ class Mesi(Cache):
                 removed_block_index = self.get_block_index(set_index, removed_tag)
                 self.snooping.remove_shared_cache(removed_block_index, self.core_num)
 
-    def schedule_update(self, stall_cycles, block_index, set_index, tag):
+    def schedule_update(self, current_state, new_state, stall_cycles, block_index, set_index, tag):
         #check if cache is exclusive or modified in other cores
-        if self.snooping.is_cache_exclusive(block_index):
+        if self.snooping.is_cache_exclusive(block_index) and current_state == INVALID:
+            #print(current_state, " ", INVALID)
+            #print('block_index ', block_index)
             self.snooping.bus_updates += 1
             self.snooping.set_cycle_busy(self.cache_transfer)
             self.idle_cycles += self.cache_transfer
-        
-        self.set_cycle_busy(stall_cycles)
-        self.data_miss += 1
+            self.data_miss += 1
+            self.has_scheduled_update = True
+        elif stall_cycles > 0:
+            self.set_cycle_busy(stall_cycles)
+            self.data_miss += 1
+            self.has_scheduled_update = True
+        else:
+            self.cache_hit(new_state, set_index, tag)
     
     def cache_hit(self, new_state, set_index, tag):
         self.cache_states[set_index][tag] = new_state
@@ -60,22 +70,21 @@ class Mesi(Cache):
 
     def snooping_next_state_transtion(self, instr_type, snoop_action, block_index, set_index, tag):
         cache_state = self.cache_states[set_index]
-        if tag in cache_state and cache_state[tag] != INVALID:
-            new_state, snoop_action, stall_cycles = MESI_STATE_MACHINE[cache_state[tag]][INSTRUCTION_MAP[instr_type]]
-            cache_state[tag] = new_state
-            self.set_cycle_busy(stall_cycles)
-
+        if tag in cache_state and cache_state[tag] != INVALID: 
+            current_state = cache_state[tag]          
+            new_state, new_snoop_action, stall_cycles = MESI_STATE_MACHINE[current_state][snoop_action]
             if new_state == INVALID:
                 self.snooping.invalidations += 1
                 self.snooping.remove_shared_cache(block_index, self.core_num)
-            elif new_state == MODIFIED or new_state == EXCLUSIVE:
-                self.private_data_access += 1
-            else:
-                self.public_data_access += 1
+            
+            cache_state[tag] = new_state
+            self.set_cycle_busy(stall_cycles)
+            return current_state
+        return INVALID
     
     def is_generate_bus(self, instr_type, data_address):
         block_index, set_index, tag = self.get_cache_info(data_address)
-        current_state = self.cache_states[set_index].get(set_index, INVALID)
+        current_state = self.cache_states[set_index].get(tag, INVALID)
         return current_state == INVALID or (current_state == SHARED and INSTRUCTION_MAP[instr_type] == STORE)
         
 

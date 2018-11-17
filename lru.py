@@ -5,15 +5,17 @@ class LRU:
         self.blocks = []
 
     def reorder_to_recent(self, index):
-        self.blocks.insert(0, self.blocks.pop(index))
+        popped = self.blocks.pop(index)
+        self.blocks.insert(0, popped)
 
     def cache_replacement(self, tag):
         removed_tag = None
         if tag in self.blocks:
-            self.reorder_to_recent(self.blocks.index(tag))
-        elif len(self.blocks) == self.associativity:
-            removed_tag = self.blocks.pop()
-        
-        self.blocks.insert(0, tag)
+            block_index = self.blocks.index(tag)
+            self.reorder_to_recent(block_index)
+        else:
+            if len(self.blocks) == self.associativity:
+                removed_tag = self.blocks.pop()
+            self.blocks.insert(0, tag)
         return removed_tag
 
