@@ -35,11 +35,7 @@ class Snooping:
         return (block_index in self.shared_cache)
     
     def is_cache_exclusive(self, block_index):
-        #return self.exclusive_cache.get(block_index, False)
-        if block_index in self.exclusive_cache:
-            return self.exclusive_cache[block_index]
-        else:
-            return False
+        return self.exclusive_cache.get(block_index, False)
 
     #Snooping gets busy when transfering a cache block from one processor to another
     def is_busy(self):
