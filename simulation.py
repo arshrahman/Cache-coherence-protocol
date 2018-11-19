@@ -23,6 +23,7 @@ class Simulation:
         self.snooping = Snooping(self.caches)
 
     def execute(self):
+        print('simulating...')
         self.counter = 1
         done = [False for i in range(TOTAL_CORES)]
         start_time = time.time()
@@ -63,7 +64,8 @@ class Simulation:
         self.time_taken = end_time - start_time                
 
     def results(self):
-        print('\n','RESULTS')
+        print()
+        print('RESULTS')
         print('-------')
         
         print('Time taken ', self.time_taken, '\n')
@@ -89,6 +91,12 @@ class Simulation:
             print('Private data accesses: ', self.caches[i].private_data_access)
             print('Public data accesses: ', self.caches[i].public_data_access, '\n')
 
-simulation = Simulation('dragon', 'blackscholes', 1024, 2, 16)
-simulation.execute()
-simulation.results()
+
+
+#simulation = Simulation('dragon', 'blackscholes', 1024, 2, 16)
+#simulation.execute()
+#simulation.results()
+
+#simulation = Simulation('mesi', 'blackscholes', 1024, 2, 16)
+#simulation.execute()
+#simulation.results()
