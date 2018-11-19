@@ -31,7 +31,7 @@ class Cache:
             return True
 
     def set_cycle_busy(self, cycles):
-        self.stall_cycle += cycles
+        self.stall_cycle = cycles
 
     def get_cache_info(self, data_address):
         block_index = data_address // self.block_size

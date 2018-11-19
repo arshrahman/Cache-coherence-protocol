@@ -52,8 +52,8 @@ class Simulation:
                 #c.cache.process_data(instr_type, data)
                 #c.instruction_type[instr_type] += 1
                 #'''
-                #if not snooping_busy or not c.cache.is_generate_bus(instr_type, data):
-                if not snooping_busy:
+                if not snooping_busy or not c.cache.is_generate_bus(instr_type, data):
+                #if not snooping_busy:
                     has_scheduled_update = c.cache.process_data(instr_type, data)
                     if has_scheduled_update:
                         c.stall_instruction()

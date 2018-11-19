@@ -1,5 +1,5 @@
+from cache import Cache
 
-
-class Dragon():
+class Dragon(Cache):
     def __init__(self, cache_size, associativity, block_size, core_num):
-        pass
+        Cache.__init__(self, cache_size, associativity, block_size, core_num)

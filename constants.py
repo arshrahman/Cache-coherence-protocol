@@ -27,6 +27,8 @@ RWITM = 'rwitm' #Read with Intent to Modify
 MODIFIED = 'modified'
 EXCLUSIVE = 'exclusive'
 SHARED = 'shared'
+SHARED_CLEAN = "shared_clean"
+SHARED_MODIFIED = "shared_modified"
 INVALID = 'invalid'
 
 
