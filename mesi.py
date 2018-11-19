@@ -20,7 +20,6 @@ class Mesi(Cache):
         else:
             self.schedule_update(cache_state, current_state, new_state, stall_cycles, block_index, set_index, tag)
 
-        #print('core', self.core_num, 'instr_type', instr_type, 'snoop_action', snoop_action, 'next_state', new_state, 'set_index', set_index, 'tag', tag)
         if self.snoop_transaction and snoop_action is not None:
             self.snooping.snoop_caches(self.core_num, instr_type, snoop_action, block_index, set_index, tag)    
         return self.has_scheduled_update

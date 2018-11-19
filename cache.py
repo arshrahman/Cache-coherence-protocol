@@ -7,7 +7,7 @@ class Cache:
         self.block_size = block_size
         self.core_num = core_num
         self.set_size = cache_size // (associativity * block_size) 
-        self.cache_states = [{} for i in range(self.set_size)] #defaultdict(dict)
+        self.cache_states = defaultdict(dict)
         self.cache_data = [LRU(associativity, i) for i in range(self.set_size)]
         self.has_scheduled_update = False
         self.stall_cycle = 0

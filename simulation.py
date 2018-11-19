@@ -23,6 +23,7 @@ class Simulation:
         self.snooping = Snooping(self.caches)
 
     def execute(self):
+        print('simulating...')
         self.counter = 1
         done = [False for i in range(TOTAL_CORES)]
         start_time = time.time()
@@ -30,7 +31,6 @@ class Simulation:
         while not all(done):
             snooping_busy = self.snooping.is_busy()
             for c in self.cores:
-                #if c.current_instruction % 1000 == 0:
                 #print('core num', c.core_num, 'instuction num: ', c.current_instruction, ' core cycle ', c.stall_cycle, ' cache cycle ', c.cache.stall_cycle, 'snoop cycle ', self.snooping.stall_cycle)
                 if done[c.core_num]:
                     c.instruction_type[COUNT] = self.counter if c.instruction_type[COUNT] == 0 else c.instruction_type[COUNT]
@@ -49,11 +49,7 @@ class Simulation:
                     c.instruction_type[OTHER_INSTRUCTION] += data
                     continue
                 
-                #c.cache.process_data(instr_type, data)
-                #c.instruction_type[instr_type] += 1
-                #'''
                 if not snooping_busy or not c.cache.is_generate_bus(instr_type, data):
-                #if not snooping_busy:
                     has_scheduled_update = c.cache.process_data(instr_type, data)
                     if has_scheduled_update:
                         c.stall_instruction()
@@ -61,7 +57,6 @@ class Simulation:
                         c.instruction_type[instr_type] += 1
                 else:
                     c.stall_instruction()
-                #'''
             
             self.counter += 1
         
@@ -69,6 +64,7 @@ class Simulation:
         self.time_taken = end_time - start_time                
 
     def results(self):
+        print()
         print('RESULTS')
         print('-------')
         
@@ -95,6 +91,12 @@ class Simulation:
             print('Private data accesses: ', self.caches[i].private_data_access)
             print('Public data accesses: ', self.caches[i].public_data_access, '\n')
 
-simulation = Simulation('mesi', 'blackscholes', 1024, 2, 16)
-simulation.execute()
-simulation.results()
+
+
+#simulation = Simulation('dragon', 'blackscholes', 1024, 2, 16)
+#simulation.execute()
+#simulation.results()
+
+#simulation = Simulation('mesi', 'blackscholes', 1024, 2, 16)
+#simulation.execute()
+#simulation.results()
