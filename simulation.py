@@ -64,34 +64,38 @@ class Simulation:
         self.time_taken = end_time - start_time                
 
     def results(self):
-        print()
-        print('RESULTS')
-        print('-------')
+        print('SIMULATION REPORT')
+        print('------------------------------')
         
-        print('Time taken ', self.time_taken, '\n')
-        print('Overall Execution Cycle: ', self.counter, '\n')
+        print('Time taken:', self.time_taken)
+        print('Overall Execution Cycle:', self.counter, '\n')
         
         print('Bus snooping results')
-        print('Data traffic:', self.snooping.data_traffic)
-        print('Invalidations: ', self.snooping.invalidations)
-        print('Bus updates: ', self.snooping.bus_updates, '\n')
+        print('Data traffic:', self.snooping.data_traffic, '|',  
+            'Invalidations:', self.snooping.invalidations, '|',  'Bus updates:', self.snooping.bus_updates, '\n');
+        print('------------------------------')
+        # print('Data traffic:', self.snooping.data_traffic)
+        # print('Invalidations: ', self.snooping.invalidations)
+        # print('Bus updates: ', self.snooping.bus_updates, '\n')
 
         for i in range(TOTAL_CORES):
             total_cycles = self.cores[i].instruction_type[COUNT] if self.cores[i].instruction_type[COUNT] > 0 else self.counter
-            print('Core ', i)
-            print('Total cycles: ', total_cycles)
-            print('Compute cycles: ', self.cores[i].instruction_type[OTHER_INSTRUCTION])
-            print('Load cycles: ', self.cores[i].instruction_type[LOAD])
-            print('Store cycles: ', self.cores[i].instruction_type[STORE])
-            print('Idle cycles: ', self.caches[i].idle_cycles)
-            
             total_data_instr = self.cores[i].instruction_type[LOAD] + self.cores[i].instruction_type[STORE]
             data_miss_rate =  (100.0  * (self.caches[i].data_miss / total_data_instr)) if total_data_instr > 0 else 0.0
-            print('Data miss rate: ', data_miss_rate)
-            print('Private data accesses: ', self.caches[i].private_data_access)
-            print('Public data accesses: ', self.caches[i].public_data_access, '\n')
 
-
+            print('Core', i, '|', 'Total cycles:', total_cycles, '|', 'Compute cycles:', self.cores[i].instruction_type[OTHER_INSTRUCTION], '|',
+                'Load cycles:', self.cores[i].instruction_type[LOAD], '|', 'Store cycles:', self.cores[i].instruction_type[STORE], '|', 
+                'Idle cycles:', self.caches[i].idle_cycles, '|', 'Data miss rate:', data_miss_rate, '|', 'Private data accesses:', self.caches[i].private_data_access,
+                '|', 'Public data accesses:', self.caches[i].public_data_access)
+            print('------------------------------')
+            # print('Total cycles: ', total_cycles)
+            # print('Compute cycles: ', self.cores[i].instruction_type[OTHER_INSTRUCTION])
+            # print('Load cycles: ', self.cores[i].instruction_type[LOAD])
+            # print('Store cycles: ', self.cores[i].instruction_type[STORE])
+            # print('Idle cycles: ', self.caches[i].idle_cycles)
+            # print('Data miss rate: ', data_miss_rate)
+            # print('Private data accesses: ', self.caches[i].private_data_access)
+            # print('Public data accesses: ', self.caches[i].public_data_access, '\n')
 
 #simulation = Simulation('dragon', 'blackscholes', 1024, 2, 16)
 #simulation.execute()
